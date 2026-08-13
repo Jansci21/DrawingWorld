@@ -1,0 +1,117 @@
+body{
+    margin: 0;
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+}
+
+#world_container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    gap: 20px;
+    background-color: rgb(47, 190, 201);
+    height: 100vh;
+    width: 100vw;
+}
+
+h1, h2, h3 {
+    font-family: "Schoolbell";
+
+}
+
+/*Shape page*/
+#shapes_page {
+    display: none;
+}
+
+#shape_container {
+    display: flex;
+    justify-content: space-evenly;
+    flex-wrap: wrap;
+
+}
+
+.shape {
+    background-color: yellowgreen;
+    margin: 0 10px;
+    height: 100px;
+    width: 100px;
+    transition: transform 0.2s
+}
+
+.shape:not(.selected):hover {
+    transform: scale(1.2);
+}
+
+#circle {
+    border-radius: 50%;
+}
+
+
+
+/*Colours*/
+
+#colours_page {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+}
+
+#colour_container {
+    display: flex;
+}
+
+.colour {
+    height: 50px;
+    width: 50px;
+    margin: 0 10px;
+    transition: transform 0.2s;
+}
+
+.colour:hover {
+    transform: scale(1.2);
+}
+
+#colour_1 {
+    background-color: red;
+}
+#colour_2 {
+    background-color: orange;
+}
+#colour_3 {
+    background-color: yellow;
+}
+#colour_4 {
+    background-color: green;
+}
+#colour_5 {
+    background-color: blue;
+}
+
+#confirm_button {
+    margin: 20px 0;
+}
+
+/*Home*/
+
+#home {
+    display: none;
+}
+
+#home_text {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    
+}
+
+/*Canvas*/
+
+#canvas_container {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+}
+
