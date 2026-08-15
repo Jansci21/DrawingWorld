@@ -19,6 +19,14 @@
         <button class="button" data-type="Upload">Upload World</button>
 
         <!--New World-->
+
+        <div id="home">
+            <div id="home_text">
+                <div id="add_items">+</div>
+            </div>
+        </div>
+
+
         <div id="shapes_page">
             <h2 id="shape_text" >Choose your world's shape.</h2>
             <div id="shape_container"> 
@@ -29,29 +37,40 @@
 
         <div id="colours_page">
             <h2 id="colour_text">Choose your world's colour.</h2>
-            <div id="colour_container">
+            
+            
+        </div>
+
+        
+
+        <div id="canvas_container">
+            <h2>Add some texture to your world.</h2>
+            <canvas id="canvas" width="100" height="100">test</canvas>
+            <input type="range" id="canvas_brush_size" min="1" max="20" value="1">
+            <div id="canvas_button_container">
+                <button id="canvas_undo" class="orange">U</button>
+                <button id="canvas_redo" class="orange">R</button>
+            </div>
+            <div id="tools">
+                <button id="canvas_brush">Brush</button>
+                <button id="canvas_eraser">Eraser</button>
+            </div>
+        </div>
+
+        <div id="colour_container">
+            <div id="colour_row">
                 <div id="colour_1" class="colour"></div>
                 <div id="colour_2" class="colour"></div>
                 <div id="colour_3" class="colour"></div>
                 <div id="colour_4" class="colour"></div>
                 <div id="colour_5" class="colour"></div>
                 <input type="color" class="colour" id="colour_picker">
+                
             </div>
             <button id="confirm_button">Confirm</button>
         </div>
 
-        <div id="home">
-            <div id="home_text">
-                <h2>Congratulations on making a world!</h2>
-                <h3>You may begin customising it now. Select the add button.</h3>
-                <button id="add_items">Add items</button>
-            </div>
-        </div>
-
-        <div id="canvas_container">
-                <h2>Add some texture to your world.</h2>
-                <canvas id="canvas" width="100" height="100">test</canvas>
-        </div>
+        
 
 
     </div>

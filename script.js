@@ -12,114 +12,353 @@ const shape_text = document.getElementById("shape_text")
 const colours_page = document.getElementById("colours_page")
 const colours = document.querySelectorAll(".colour")
 const colour_picker = document.getElementById("colour_picker")
-const confirm_colour = document.getElementById("confirm_button")
+const confirm_button = document.getElementById("confirm_button")
+const colour_text = document.getElementById("colour_text")
+const colour_container = document.getElementById("colour_container")
+const colour_row = document.getElementById("colour_row")
+
 
 //Page 4 (Home) 
 const home = document.getElementById("home")
 const canvas = document.getElementById("canvas")
-const ctx = canvas.getContext("2d")
+const ctx = canvas.getContext("2d") //returns an object with tools(methods) for drawing.
 const canvas_container = document.getElementById("canvas_container")
 
+const canvas_eraser = document.getElementById("canvas_eraser")
+const canvas_brush = document.getElementById("canvas_brush")
+const canvas_undo = document.getElementById("canvas_undo")
+const canvas_redo = document.getElementById("canvas_redo")
+const canvas_brush_size = document.getElementById("canvas_brush_size")
+
+
+let canvas_history = []
+
+const blank_canvas = ctx.getImageData(0,0, canvas.width, canvas.height)
+canvas_history.push(blank_canvas)
+
 let state = {
-    page: "home",
+    button: null,
+    page: null,
+    exit: null,
+    colour_pallete: null,
+    custom_colour: "#000000",
+    add_colour: null,
     shape: null,
-    colour: null,
-    shape_colour: "yellowgreen"
+    shape_colour: "yellowgreen",
+    shape_coloured: false,
+    drawing: false,
+    tool: "brush",
+    brush_colour: "black",
+    stroke: 0,
+    undo: false
 }
+
+
+
 
 let zoom = 1
 
 
-function newworld() {
-    console.log("New world creation has been selected.")
+function render() {
 
-    for (let button of buttons) {
-        button.style.display = "none"
-    }
-
-    //show shape screen
-
-    state.page = "shapes"
-    shapes_page.style.display = "block"
-
-    //set up click for shapes
-    shapes.forEach(function(shape) {
-        shape.addEventListener("click", function() {
-            shape_selected(shape)
-        })
-    })
-
-}
-
-function shape_selected(shape) {
-    console.log("A", shape.id, "world has been selected.")
-
-    shapes.forEach(function(othershape) {
-        if (othershape !== shape) {
-            shape_text.style.display = "none"
-            othershape.style.display = "none"
-            shape.classList.add("selected")
-            state.page = "colours"
+    //Exiting Page 1 (Buttons)
+    if (state.button === "new world") {
+        for (let button of buttons) {
+            button.style.display = "none"
 
         }
-    })
+    }
+
+    //Page 2 (Select shape)
+
+    if (state.page === "shapes") {
+        shapes_page.style.display = "block"
+        
+    }
+
+    //Exiting Page 2
+    if (state.exit === "shapes") {
+        shapes.forEach(function(othershape) {
+            if (othershape !== state.shape) {
+                shape_text.style.display = "none"
+                othershape.style.display = "none"       
+            }
+        })
+    }
+
+    //Page 3 (choosing colour) 
 
     if (state.page === "colours") {
-        //show colour page
-        if (state.colour === null) {
+        if (state.shape_coloured === false) {
             colours_page.style.display = "flex"
-        } 
+            colour_container.style.display = "flex"
             
-                
-        //set up click for colours
-        colours.forEach(function(colour) {
-            colour.addEventListener("click", function() {
-                colour_selected(colour, shape, "preset")
-            })
-        })
 
-        //set up click for colour picker
-        colour_picker.addEventListener("input", function() {
-            colour_selected(colour_picker.value, shape, "custom")
-        })
+        }
+        if (state.shape_coloured === true) {
+            state.shape.style.backgroundColor = state.shape_colour
 
-        //set up click for confirm colour button
-        confirm_colour.addEventListener("click", function() {
-            colours_page.style.display = "none"
-            console.log("The colour painted has been confirmed.")
-            canvas_board(shape, state.shape_colour)
-            //zooming(shape)
-            //home_page()
-            drawing(canvas)
+        }
+        
+        
+    }
 
-
-        })
-
+    //Exiting Page 3
+    if (state.exit === "colours") { 
+        state.shape.style.display = "none"
+        colours_page.style.display = "none"
+        canvas.style.backgroundColor = state.shape_colour
 
     }
 
+    //Page 4 (texture) 
+    if (state.page === "texture") {
+        canvas_container.style.display = "flex"
+        ctx.strokeStyle = state.brush_colour
+        console.log("Texture page")
+        
+        // add the add colour boxes
+
+        if (state.add_colour === false) {
+            create()
+        }
+    }
+    //Exiting page 4
+    if (state.exit === "texture") {
+        canvas_container.style.display = "none"
+        colour_container.style.display = "none"
+    }
+
+    //Page 5
+
+    if (state.page === "home") {
+        home.style.display = "block"
+        state.shape.style.display = "block"
+        zooming()
+        
+    }
+
+}
     
+//When button is clicked
+buttons.forEach(function(button) {
+    button.addEventListener("click", function(event) {
+        const type = event.target.dataset.type
+
+        if (type === "New world") {
+            console.log("New world has been selected.")
+            state.page = "shapes"
+            state.button = "new world"
+            render()
+        }
+
+        if (type === "Upload") {
+            console.log("Upload file has been selected.")
+            //add open file explorer and etc to upload
+        }
+    })
+})
+
+//When a shape is clicked
+shapes.forEach(function(shape) {
+    shape.addEventListener("click", function() {
+        console.log("A shape has been selected.")
+        state.shape = shape
+        state.exit = "shapes"
+        state.page = "colours"
+        state.colour_pallete = "shapes"
+        shape.classList.add("selected")
+        render()
+    })
+})
+
+//Colour pallete (shape colour & brush colour)
+
+
+colours.forEach(function(colour) {
+    colour.addEventListener("click", function() {
+        if (state.colour_pallete === "shapes") {
+            console.log("Shape has been coloured.")
+            state.shape_colour = getComputedStyle(colour).backgroundColor
+            state.shape_coloured = true
+            console.log(state.shape_colour)
+            render()
+        }
+
+        if (state.colour_pallete === "texture") {
+            state.brush_colour = getComputedStyle(colour).backgroundColor
+            render()
+        }
+        
+        
+    })
+})
+
+colour_picker.addEventListener("input", function() {
+    if (state.colour_pallete === "shapes") {
+        //console.log("Shape has been coloured.")
+        state.shape_colour = colour_picker.value
+        state.shape_coloured = true
+        
+    
+        render()
+    }
+
+    if (state.colour_pallete === "texture") {
+        state.brush_colour = colour_picker.value
+        state.custom_colour = colour_picker.value
+        
+        render()
+    }
+    
+})
+
+colour_picker.addEventListener("click", function() {
+    colour_picker.value = state.custom_colour
+    if (state.colour_pallete === "shapes") {
+        state.shape_colour = colour_picker.value
+    }
+    if (state.colour_pallete === "texture") {
+        state.brush_colour = colour_picker.value
+    }
+    render()
+})
+
+
+confirm_button.addEventListener("click", function() {
+    if (state.colour_pallete === "shapes") {
+        console.log("Colour has been confirmed.")
+        state.exit = "colours"
+        state.page = "texture"
+        state.colour_pallete = "texture"
+        console.log("Texture pallete")
+        state.add_colour = false
+        render()
+    }
+
+    else if (state.colour_pallete === "texture") {
+        console.log("Texture has been confirmed.")
+        const image = new Image()
+        image.src = canvas.toDataURL("image/png")
+        state.shape.style.backgroundImage = `url(${image.src})`
+        state.shape.style.backgroundRepeat = "repeat"
+        state.shape.style.backgroundSize = "20px 20px"
+        state.exit = "texture"
+        state.page = "home"
+        render()
+    }
+
+})
+
+//adding custom colours to new boxes
+
+function create() {
+
+    const add_colour = document.createElement("div")
+    add_colour.classList.add("add_colour") 
+    add_colour.classList.add("colour")
+    add_colour.textContent = "+"
+    colour_row.appendChild(add_colour)
+    console.log("New box made.")
+
+    state.add_colour = true
+
+
+    add_colour.addEventListener("click", function() {
+        add_colour.style.backgroundColor = state.custom_colour
+        add_colour.textContent = ""
+        add_colour.classList.add("coloured")
+        console.log("Box coloured")
+        create()
+        
+    }, {once: true} )
+
+    const coloured_box = document.querySelectorAll(".coloured")
+    coloured_box.forEach(function(box) {
+        box.addEventListener("click", function() {
+            state.brush_colour = getComputedStyle(box).backgroundColor
+            render()
+        })
+    })
+    
+
 }
 
-function colour_selected(colour, shape, type) {
-    if (type === "preset") {
-        const colourchosen = getComputedStyle(colour).backgroundColor
-        console.log("The selected shape has been painted", colourchosen)
-        shape.style.backgroundColor = colourchosen
-        state.shape_colour = colourchosen
+//Canvas tools
+canvas_eraser.addEventListener("click", function() {
+    console.log("Eraser has been selected.")
+    state.tool = "eraser"
+})
 
+canvas_brush.addEventListener("click", function() {
+    console.log("Brush has been selected.")
+    state.tool = "brush"
+})
+
+canvas_undo.addEventListener("click", function() {
+    state.undo = true
+    console.log("Undo.")
+    state.stroke = Math.max(0, state.stroke-1)
+    ctx.putImageData(canvas_history[state.stroke], 0, 0)
+})
+
+canvas_redo.addEventListener("click", function() {
+    console.log("Redo.")
+    state.stroke = Math.min(state.stroke+1, canvas_history.length-1)
+    ctx.putImageData(canvas_history[state.stroke], 0, 0)
+
+})
+
+canvas_brush_size.addEventListener("input", function() {
+    console.log(canvas_brush_size.value)
+    ctx.lineWidth = canvas_brush_size.value
+})
+
+//Canvas drawing 
+canvas.addEventListener("pointerdown", function(event) {
+    console.log("Drawing")
+    state.drawing = true
+    ctx.beginPath()
+    ctx.moveTo(event.offsetX, event.offsetY)
+})
+
+canvas.addEventListener("pointerup", function() {
+    state.drawing = false
+    ctx.beginPath()
+    state.stroke += 1
+    if (state.undo === true) {
+        canvas_history.splice(state.stroke)
+        state.undo = false
     }
 
-    else {
-        shape.style.backgroundColor = colour
-        state.shape_colour = colour
-    }
+    const image_data = ctx.getImageData(0,0, canvas.width, canvas.height)
+    canvas_history.push(image_data)
+})
+
+canvas.addEventListener("pointermove", function(event) {
+    if (state.drawing === true) {
+
+        if(state.tool === "brush") {
+            console.log("Drawing")
+            ctx.globalCompositeOperation = "source-over"
+            ctx.lineTo(event.offsetX, event.offsetY) //stroke ending here
+            ctx.stroke() //show stroke   
+            }
+
+        if (state.tool === "eraser") {
+            console.log("Erasing")
+            ctx.globalCompositeOperation = "destination-out"
+            ctx.lineTo(event.offsetX, event.offsetY) //stroke ending here
+            ctx.stroke() //show stroke 
+        }
+    } 
+})
 
 
-    
-}
 
-function zooming(shape) {
+
+//Zooming stuff
+function zooming() {
     window.addEventListener("wheel", function(event) {
         console.log(event.deltaY)
         if(event.deltaY < 0) {
@@ -131,68 +370,20 @@ function zooming(shape) {
         }
 
         zoom = Math.max(1, Math.min (5.5, zoom))
-        shape.style.transform = `scale(${zoom})`
+        state.shape.style.transform = `scale(${zoom})`
     })
 }
 
-function home_page() {
-    home.style.display = "block"
-}
 
-function canvas_board(shape, colour) {
-    canvas_container.style.display = "flex"
-    //console.log(shape)
-    console.log(colour)
 
-    //radius = getComputedStyle(shape).borderRadius
-    //console.log(radius)
 
-    //canvas.style.borderRadius = radius
-    shape.style.display = "none"
-    canvas.style.backgroundColor = colour 
-    console.log(colour)
-}
 
-function drawing(element) {
-    let drawing = false
 
-    element.addEventListener("mousedown", function() {
-        drawing = true
-    })
 
-    element.addEventListener("mouseup", function() {
-        drawing = false
-        ctx.beginPath()
-    })
 
-    element.addEventListener("mousemove", function(event) {
-        if (drawing != false) {
-            ctx.lineTo(event.offsetX, event.offsetY)
-            ctx.stroke()
 
-            ctx.beginPath()
-            ctx.moveTo(event.offsetX, event.offsetY)
-        }
-    })
 
-    //when add items is clicked
-}
 
-buttons.forEach(function(button) {
-    button.addEventListener("click", function(event) {
-        const type = event.target.dataset.type
-
-        //New World
-        if (type === "New world") {
-            newworld()
-        }
-        //Upload
-        if (type === "Upload") {
-            console.log("File ready to upload.")
-            //add open file explorer and etc to upload
-        }
-    })
-})
 
 
 

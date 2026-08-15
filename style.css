@@ -60,13 +60,31 @@ h1, h2, h3 {
 }
 
 #colour_container {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+}
+
+#colour_row {
     display: flex;
+    flex-wrap: wrap;
+    width: 420px;
+    row-gap: 10px;
+}
+
+.add_colour {
+    background-color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: "Schoolbell";
+    font-size: 80px;
 }
 
 .colour {
     height: 50px;
     width: 50px;
-    margin: 0 10px;
+    margin: 5px 10px;
     transition: transform 0.2s;
 }
 
@@ -98,20 +116,69 @@ h1, h2, h3 {
 
 #home {
     display: none;
+
 }
+
+
 
 #home_text {
     display: flex;
     flex-direction: column;
     align-items: center;
-    
+
+}
+
+
+#add_items {
+    position: absolute;
+    font-family: "Schoolbell";
+    font-size: 100px;
+    right: 10px;
+    top: -40px;
+    color: darkred;
+}
+
+#add_items:hover {
+    cursor: pointer;
 }
 
 /*Canvas*/
 
 #canvas_container {
+    position: relative;
     display: none;
     flex-direction: column;
     align-items: center;
 }
+
+#canvas_button_container {
+    position: absolute;
+    display: flex;
+    top: 72px;
+    right: 55px;
+    gap: 1px;
+}
+
+#canvas {
+    touch-action: none;
+}
+
+#tools {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    bottom: 20px;
+    left: 52px;
+    gap: 1px;
+}
+
+#brush_size {
+    margin-top: 5px;
+    width: 105px;
+}
+
+
+
+
+
 
